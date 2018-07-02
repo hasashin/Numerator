@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.IO;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -10,11 +11,55 @@ using System.Windows.Forms;
 
 namespace Numerator
 {
-    public partial class Form1 : Form
+    public partial class Numerator : Form
     {
-        public Form1()
+        private CustomData dane = new CustomData();
+        private void loadYears()
+        {
+            if (!Directory.Exists(Environment.CurrentDirectory + "\\Data"))
+            {
+                Directory.CreateDirectory(Environment.CurrentDirectory + "\\Data");
+            }
+            string[] files = Directory.GetFiles(Environment.CurrentDirectory + "\\Data");
+            foreach (string file in files)
+            {
+                if (file.EndsWith(".db"))
+                {
+                    string newfile = file.Replace(Environment.CurrentDirectory + "\\Data", "");
+                    yearSelectComboBox.Items.Add(file.Substring(0, newfile.IndexOf('.')));
+                }
+            }
+            if (yearSelectComboBox.Items.Count > 0)
+                yearSelectComboBox.SelectedIndex = 0;
+        }
+
+        public Numerator()
         {
             InitializeComponent();
+            loadYears();
+        }
+
+        private void fillGrid()
+        {
+            DataTable table = dane.get();
+            foreach(DataRow row in table.AsEnumerable())
+            {
+                dataGrid.Rows.Add(row[0], row[1]);
+            }
+        }
+
+        private void yearSelectComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            dane.saveData();
+            dane.yearName = yearSelectComboBox.SelectedText;
+            dane.loadData();
+            fillGrid();
+        }
+
+        private void addNumer_Click(object sender, EventArgs e)
+        {
+            NewDialog dlg = new NewDialog(yearSelectComboBox.Items, dane.get());
+            dlg.ShowDialog(this);
         }
     }
 }
