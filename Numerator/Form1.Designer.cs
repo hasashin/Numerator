@@ -34,8 +34,6 @@
             this.yearSelectComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.dataGrid = new System.Windows.Forms.DataGridView();
-            this.Numer = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Kerg = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -90,28 +88,15 @@
             // 
             this.dataGrid.AllowUserToAddRows = false;
             this.dataGrid.AllowUserToDeleteRows = false;
+            this.dataGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Numer,
-            this.Kerg});
             this.dataGrid.Location = new System.Drawing.Point(13, 117);
             this.dataGrid.Name = "dataGrid";
             this.dataGrid.ReadOnly = true;
             this.dataGrid.RowTemplate.Height = 28;
+            this.dataGrid.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.dataGrid.Size = new System.Drawing.Size(745, 499);
             this.dataGrid.TabIndex = 5;
-            // 
-            // Numer
-            // 
-            this.Numer.HeaderText = "Numer";
-            this.Numer.Name = "Numer";
-            this.Numer.ReadOnly = true;
-            // 
-            // Kerg
-            // 
-            this.Kerg.HeaderText = "KERG";
-            this.Kerg.Name = "Kerg";
-            this.Kerg.ReadOnly = true;
             // 
             // Numerator
             // 
@@ -140,8 +125,6 @@
         private System.Windows.Forms.Label label1;
         internal System.Windows.Forms.ComboBox yearSelectComboBox;
         private System.Windows.Forms.DataGridView dataGrid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Numer;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Kerg;
     }
 }
 

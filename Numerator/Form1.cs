@@ -37,6 +37,8 @@ namespace Numerator
         {
             InitializeComponent();
             loadYears();
+            dataGrid.DataSource = dane.get();
+            dataGrid.AutoGenerateColumns = true;
         }
 
         private void fillGrid()
@@ -46,6 +48,16 @@ namespace Numerator
             {
                 dataGrid.Rows.Add(row[0], row[1]);
             }
+        }
+
+        private void BindData(DataTable dt)
+        {
+            dataGrid.Columns.Clear();
+            BindingSource bindingSource = new BindingSource
+            {
+                DataSource = dt
+            };
+            dataGrid.DataSource = bindingSource;
         }
 
         private void yearSelectComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -60,6 +72,12 @@ namespace Numerator
         {
             NewDialog dlg = new NewDialog(yearSelectComboBox.Items, dane.get());
             dlg.ShowDialog(this);
+            if(dlg.DialogResult == DialogResult.OK)
+            {
+                dane.AddNew(dlg.get());
+            }
+            BindData(dane.get());
+            yearSelectComboBox.SelectedText = dane.yearName;
         }
     }
 }

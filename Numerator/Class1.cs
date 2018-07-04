@@ -19,12 +19,14 @@ namespace Numerator
         public CustomData()
         {
             dt = new DataTable();
+            PrepareDataTable();
         }
 
         public CustomData(string year)
         {
             yearName = year;
             dt = new DataTable();
+            PrepareDataTable();
         }
 
         // Convert an object to a byte array
@@ -43,20 +45,26 @@ namespace Numerator
         {
             using (var memStream = new MemoryStream())
             {
-                var binForm = new BinaryFormatter();
+                BinaryFormatter binForm = new BinaryFormatter();
                 memStream.Write(arrBytes, 0, arrBytes.Length);
                 memStream.Seek(0, SeekOrigin.Begin);
-                var obj = binForm.Deserialize(memStream);
+                Object obj = binForm.Deserialize(memStream);
                 return obj;
             }
         }
 
+        private void PrepareDataTable()
+        {
+            dt.Clear();
+            dt.Columns.Add("Numer");
+            dt.Columns.Add("KERG");
+        }
+
         public void saveData()
         {
-            File.Delete(Environment.CurrentDirectory + "\\Data\\" + yearName + ".db");
-            File.Create(Environment.CurrentDirectory + "\\Data\\" + yearName + ".db");
-            FileStream plik = File.OpenWrite(Environment.CurrentDirectory + "\\Data\\" + yearName + ".db");
-            
+            File.Delete("Data\\" + yearName + ".db");
+            FileStream plik = File.Create("\\Data\\" + yearName + ".db");
+
             try
             {
                 plik.Write(ObjectToByteArray(dt), 0, count: Int32.MaxValue);
@@ -74,26 +82,47 @@ namespace Numerator
 
         public void loadData()
         {
-            FileStream plik = File.OpenRead(Environment.CurrentDirectory + "\\Data\\" + yearName + ".db");
-            byte[] tempData = new byte[plik.Length];
-            try
+            if (!File.Exists("\\Data\\" + yearName + ".db"))
             {
-                plik.Read(tempData, 0, (int)plik.Length);
-                dt = ByteArrayToObject(tempData) as DataTable;
+                File.Create("\\Data\\" + yearName + ".db").Close();
+                dt.Clear();
             }
-            catch (Exception e)
-            {
-                MessageBox.Show(null, e.Message + "\n" + e.TargetSite, "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                plik.Close();
+            else {
+                FileStream plik = File.OpenRead("\\Data\\" + yearName + ".db");
+                byte[] tempData = new byte[plik.Length];
+                try
+                {
+                    plik.Read(tempData, 0, (int)plik.Length);
+                    dt = ByteArrayToObject(tempData) as DataTable;
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(null, e.Message + "\n" + e.TargetSite, "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    plik.Close();
+                }
             }
         }
 
         public DataTable get()
         {
             return dt;
+        }
+
+        public void AddNew(string[] newData)
+        {
+            if(yearName != newData[0])
+            {
+                saveData();
+                yearName = newData[0];
+                loadData();
+            }
+            DataRow newRow = dt.NewRow();
+            newRow["Numer"] = newData[1];
+            newRow["KERG"] = newData[2];
+            dt.Rows.Add(newRow);
         }
 
     }

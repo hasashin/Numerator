@@ -34,6 +34,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.addButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // yearComboBox
@@ -87,18 +88,36 @@
             this.label3.TabIndex = 5;
             this.label3.Text = "Numer";
             // 
+            // addButton
+            // 
+            this.addButton.Location = new System.Drawing.Point(452, 123);
+            this.addButton.Name = "addButton";
+            this.addButton.Size = new System.Drawing.Size(104, 35);
+            this.addButton.TabIndex = 6;
+            this.addButton.Text = "Dodaj";
+            this.addButton.UseVisualStyleBackColor = true;
+            this.addButton.Click += new System.EventHandler(this.addButton_Click);
+            // 
             // NewDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(568, 202);
+            this.ControlBox = false;
+            this.Controls.Add(this.addButton);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.numberTBox);
             this.Controls.Add(this.kergTBox);
             this.Controls.Add(this.yearComboBox);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "NewDialog";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Dodaj nowy";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -113,5 +132,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button addButton;
     }
 }
