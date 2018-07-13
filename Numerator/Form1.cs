@@ -16,6 +16,7 @@ namespace Numerator
         private CustomData dane = new CustomData();
         private void loadYears()
         {
+            yearSelectComboBox.Items.Clear();
             if (!Directory.Exists(Environment.CurrentDirectory + "\\Data"))
             {
                 Directory.CreateDirectory(Environment.CurrentDirectory + "\\Data");
@@ -23,31 +24,31 @@ namespace Numerator
             string[] files = Directory.GetFiles(Environment.CurrentDirectory + "\\Data");
             foreach (string file in files)
             {
-                if (file.EndsWith(".db"))
+                if (file.EndsWith(".bin"))
                 {
-                    string newfile = file.Replace(Environment.CurrentDirectory + "\\Data", "");
-                    yearSelectComboBox.Items.Add(file.Substring(0, newfile.IndexOf('.')));
+                    string newfile = file.Replace(Environment.CurrentDirectory + "\\Data\\", "");
+                    yearSelectComboBox.Items.Add(newfile.Substring(0, newfile.IndexOf('.')));
                 }
             }
             if (yearSelectComboBox.Items.Count > 0)
-                yearSelectComboBox.SelectedIndex = 0;
+            {
+                try
+                {
+                    yearSelectComboBox.SelectedIndex = yearSelectComboBox.Items.IndexOf(dane.yearName);
+                }
+                catch
+                {
+                    yearSelectComboBox.SelectedIndex = 0;
+                }
+            }
         }
 
         public Numerator()
         {
             InitializeComponent();
             loadYears();
-            dataGrid.DataSource = dane.get();
             dataGrid.AutoGenerateColumns = true;
-        }
-
-        private void fillGrid()
-        {
-            DataTable table = dane.get();
-            foreach(DataRow row in table.AsEnumerable())
-            {
-                dataGrid.Rows.Add(row[0], row[1]);
-            }
+            BindData(dane.get());
         }
 
         private void BindData(DataTable dt)
@@ -62,22 +63,58 @@ namespace Numerator
 
         private void yearSelectComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            dane.saveData();
-            dane.yearName = yearSelectComboBox.SelectedText;
+            if(!string.IsNullOrEmpty(dane.yearName)) dane.saveData();
+            dane.yearName = yearSelectComboBox.Text;
             dane.loadData();
-            fillGrid();
+            BindData(dane.get());
         }
 
         private void addNumer_Click(object sender, EventArgs e)
         {
             NewDialog dlg = new NewDialog(yearSelectComboBox.Items, dane.get());
-            dlg.ShowDialog(this);
-            if(dlg.DialogResult == DialogResult.OK)
+            DialogResult res = dlg.ShowDialog(this);
+
+            if (res == DialogResult.OK)
             {
-                dane.AddNew(dlg.get());
+                if (dlg.get()[0] == dane.yearName)
+                {
+                    dane.AddNew(dlg.get());
+                }
+                else
+                {
+                    dane.saveData();
+                    dane.Clean();
+                    dane.yearName = dlg.get()[0];
+                    dane.loadData();
+                    dane.AddNew(dlg.get());
+
+                }
+                dane.saveData();
+                loadYears();
+                BindData(dane.get());
             }
-            BindData(dane.get());
-            yearSelectComboBox.SelectedText = dane.yearName;
+        }
+
+        private void dataGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            dane.saveData();
+        }
+
+        private void endButton_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void deleteNumer_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show(this,  "Jesteś pewny, że chcesz usunąć dane z roku " + dane.yearName + "?", "Czy jesteś pewny?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if(result == DialogResult.Yes)
+            {
+                File.Delete(Environment.CurrentDirectory + "\\Dane\\" + dane.yearName + ".bin");
+                MessageBox.Show(this, "Usunięto", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                dane.yearName = null;
+                loadYears();
+            }
         }
     }
 }

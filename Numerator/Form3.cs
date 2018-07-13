@@ -26,5 +26,11 @@ namespace Numerator
         {
             return textBox1.Text;
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
+        }
     }
 }

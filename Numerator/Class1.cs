@@ -29,71 +29,50 @@ namespace Numerator
             PrepareDataTable();
         }
 
-        // Convert an object to a byte array
-        private byte[] ObjectToByteArray(Object obj)
-        {
-            BinaryFormatter bf = new BinaryFormatter();
-            using (var ms = new MemoryStream())
-            {
-                bf.Serialize(ms, obj);
-                return ms.ToArray();
-            }
-        }
-
-        // Convert a byte array to an Object
-        private Object ByteArrayToObject(byte[] arrBytes)
-        {
-            using (var memStream = new MemoryStream())
-            {
-                BinaryFormatter binForm = new BinaryFormatter();
-                memStream.Write(arrBytes, 0, arrBytes.Length);
-                memStream.Seek(0, SeekOrigin.Begin);
-                Object obj = binForm.Deserialize(memStream);
-                return obj;
-            }
-        }
-
         private void PrepareDataTable()
         {
             dt.Clear();
             dt.Columns.Add("Numer");
             dt.Columns.Add("KERG");
+            dt.Columns.Add("Ilość szkiców");
         }
 
         public void saveData()
         {
-            File.Delete("Data\\" + yearName + ".db");
-            FileStream plik = File.Create("\\Data\\" + yearName + ".db");
+            if (dt.Rows.Count > 0)
+            {
+                File.Delete(Environment.CurrentDirectory + "\\Data\\" + yearName + ".bin");
+                FileStream plik = File.Create(Environment.CurrentDirectory + "\\Data\\" + yearName + ".bin");
+                BinaryFormatter bf = new BinaryFormatter();
 
-            try
-            {
-                plik.Write(ObjectToByteArray(dt), 0, count: Int32.MaxValue);
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(null, e.Message + "\n" + e.TargetSite, "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                plik.Close();
+                try
+                {
+                    bf.Serialize(plik, dt);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(null, e.Message + "\n" + e.TargetSite, "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    plik.Close();
+                }
             }
             
         }
 
         public void loadData()
         {
-            if (!File.Exists("\\Data\\" + yearName + ".db"))
+            if (!File.Exists(Environment.CurrentDirectory + "\\Data\\" + yearName + ".bin"))
             {
-                File.Create("\\Data\\" + yearName + ".db").Close();
                 dt.Clear();
             }
             else {
-                FileStream plik = File.OpenRead("\\Data\\" + yearName + ".db");
-                byte[] tempData = new byte[plik.Length];
+                FileStream plik = File.OpenRead(Environment.CurrentDirectory + "\\Data\\" + yearName + ".bin");
+                BinaryFormatter bf = new BinaryFormatter();
                 try
                 {
-                    plik.Read(tempData, 0, (int)plik.Length);
-                    dt = ByteArrayToObject(tempData) as DataTable;
+                    dt = bf.Deserialize(plik) as DataTable;
                 }
                 catch (Exception e)
                 {
@@ -113,16 +92,18 @@ namespace Numerator
 
         public void AddNew(string[] newData)
         {
-            if(yearName != newData[0])
-            {
-                saveData();
-                yearName = newData[0];
-                loadData();
-            }
+            if (yearName != newData[0])
+                throw new InvalidDataException("Rok nowych danych nie zgadza się z aktualnym.");
             DataRow newRow = dt.NewRow();
-            newRow["Numer"] = newData[1];
-            newRow["KERG"] = newData[2];
+            newRow["KERG"] = newData[1];
+            newRow["Numer"] = newData[2];
+            newRow["Ilość szkiców"] = newData[3];
             dt.Rows.Add(newRow);
+        }
+
+        public void Clean()
+        {
+            dt.Clear();
         }
 
     }

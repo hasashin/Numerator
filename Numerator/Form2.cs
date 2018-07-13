@@ -28,7 +28,10 @@ namespace Numerator
         private void numberTBox_Click(object sender, EventArgs e)
         {
             int value=0;
-            foreach(DataRow row in table.Rows)
+            CustomData tempTable = new CustomData();
+            tempTable.yearName = yearComboBox.Text;
+            tempTable.loadData();
+            foreach(DataRow row in tempTable.get().Rows)
             {
                 if (int.Parse(row[0].ToString()) > value)
                     value = int.Parse(row[0].ToString());
@@ -39,9 +42,10 @@ namespace Numerator
 
         private void yearComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (yearComboBox.SelectedText == "Dodaj nowy")
+            if (yearComboBox.SelectedIndex == yearComboBox.Items.Count-1)
             {
                 AskForStringDIalog dialog = new AskForStringDIalog();
+                dialog.ShowDialog(this);
                 if(dialog.DialogResult == DialogResult.OK)
                 {
                     yearComboBox.Items.Add(dialog.get());
@@ -58,11 +62,18 @@ namespace Numerator
 
         public string[] get()
         {
-            string[] arr = new string[3];
+            string[] arr = new string[4];
             arr[0] = yearComboBox.Text;
             arr[1] = kergTBox.Text;
             arr[2] = numberTBox.Text;
+            arr[3] = iloscSzkicyTBox.Text;
             return arr;
+        }
+
+        private void CancelButton_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
         }
     }
 }
